@@ -12,10 +12,12 @@ class ProductController extends Controller
          return view('products.index', ['products' => $products]);
     }
 
+    //redirect to the registration form
     public function create(){
         return view('products.create');
     }
 
+    //validate and submit data from registration form
     public function store(Request $request){
         $data = $request->validate(
             [
@@ -29,5 +31,34 @@ class ProductController extends Controller
         $newProduct = Product::create($data);
 
         return redirect(route('product.index'));
+    }
+
+    //redirect to edit form
+    public function edit(Product $product){
+        return view('products.edit', ['product'=>$product]);
+    }
+
+    //update data from edit form
+    public function update(Product $product, Request $request){
+
+        $data = $request->validate(
+            [
+                'name' => 'required',
+                'qty' => 'required|numeric',
+                'price' => 'required|decimal:0,2',
+                'description' => 'nullable'
+            ]
+        );
+
+        $product->update($data);
+
+        return redirect(route('product.index'))->with('success', 'Product Successfully Updated!');
+    }
+
+    //delete data
+    public function deleteData(Product $product){
+        $product->delete();
+
+        return redirect(route('product.index'))->with('success', 'Product Successfully Deleted!');
     }
 }
